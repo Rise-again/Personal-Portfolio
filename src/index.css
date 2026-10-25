@@ -1,0 +1,377 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    background-color: #0a0a0c;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-obsidian-900 font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-bronze-400/30 text-bronze-100;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-bronze-400/70 ring-offset-2 ring-offset-obsidian-900;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0a0c;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #26262f;
+    border: 2px solid #0a0a0c;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a46;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* 毛玻璃面板 */
+  .glass {
+    @apply border border-white/[0.07] bg-white/[0.035] backdrop-blur-xl;
+  }
+
+  .glass-strong {
+    @apply border border-white/[0.08] bg-obsidian-850/80 backdrop-blur-2xl;
+  }
+
+  /* 古铜金渐变字 */
+  .text-gradient-gold {
+    background-image: linear-gradient(
+      170deg,
+      #fbf3d6 0%,
+      #eadca6 26%,
+      #d4af37 58%,
+      #b8932c 82%,
+      #96741f 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* 五线谱网格：5 条横线 + 小节竖线，周期 96px */
+  .score-grid {
+    background-image:
+      linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.02) 0 1px,
+        transparent 1px 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(212, 175, 55, 0.1) 0 1px,
+        transparent 1px 12px,
+        rgba(212, 175, 55, 0.1) 12px 13px,
+        transparent 13px 24px,
+        rgba(212, 175, 55, 0.1) 24px 25px,
+        transparent 25px 36px,
+        rgba(212, 175, 55, 0.1) 36px 37px,
+        transparent 37px 48px,
+        rgba(212, 175, 55, 0.1) 48px 49px,
+        transparent 49px 96px
+      );
+    background-size:
+      96px 96px,
+      100% 96px;
+  }
+
+  .score-mask {
+    -webkit-mask-image: radial-gradient(
+      ellipse 85% 62% at 50% 30%,
+      #000 0%,
+      rgba(0, 0, 0, 0.55) 46%,
+      transparent 78%
+    );
+    mask-image: radial-gradient(
+      ellipse 85% 62% at 50% 30%,
+      #000 0%,
+      rgba(0, 0, 0, 0.55) 46%,
+      transparent 78%
+    );
+  }
+
+  /* 胶片颗粒 */
+  .noise-overlay {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* 黑胶唱片表面 */
+  .vinyl-grooves {
+    background-image: repeating-radial-gradient(
+      circle at 50% 50%,
+      #1c1c25 0 1px,
+      #0c0c11 1px 3px
+    );
+  }
+
+  .vinyl-sheen {
+    background: conic-gradient(
+      from 200deg,
+      transparent 0deg,
+      rgba(255, 255, 255, 0.15) 24deg,
+      transparent 68deg,
+      transparent 178deg,
+      rgba(212, 175, 55, 0.32) 214deg,
+      transparent 272deg,
+      transparent 360deg
+    );
+    mix-blend-mode: screen;
+  }
+
+  .hairline {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-bronze-400 focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-obsidian-950;
+  }
+
+  /* ---------- Markdown 正文 ---------- */
+  .md-content {
+    @apply text-[15.5px] leading-[1.9] text-ink-soft;
+  }
+
+  .md-content > * + * {
+    @apply mt-5;
+  }
+
+  .md-content h1 {
+    @apply mt-14 scroll-mt-28 font-display text-[32px] leading-snug text-ink;
+  }
+
+  .md-content h2 {
+    @apply mt-14 scroll-mt-28 border-l-2 border-bronze-400/40 pl-4 font-display text-[28px] leading-snug text-ink sm:text-[30px];
+  }
+
+  .md-content h3 {
+    @apply mt-10 scroll-mt-28 font-display text-[22px] text-ink;
+  }
+
+  .md-content h4 {
+    @apply mt-8 scroll-mt-28 font-sans text-[16px] font-semibold leading-snug text-ink;
+  }
+
+  .md-content p {
+    @apply text-pretty;
+  }
+
+  .md-content a {
+    @apply text-bronze-200 underline decoration-bronze-400/30 underline-offset-4 transition-colors duration-200 hover:decoration-bronze-400;
+  }
+
+  .md-content strong {
+    @apply font-semibold text-ink;
+  }
+
+  .md-content ul {
+    @apply list-disc space-y-2 pl-5;
+  }
+
+  .md-content ol {
+    @apply list-decimal space-y-2 pl-5;
+  }
+
+  .md-content li > p {
+    @apply mt-0;
+  }
+
+  .md-content blockquote {
+    @apply my-8 rounded-r-xl border-l-2 border-bronze-400/50 bg-bronze-400/[0.04] px-6 py-4 font-display text-[19px] leading-relaxed text-ink;
+  }
+
+  .md-content blockquote p {
+    @apply mt-0;
+  }
+
+  .md-content code {
+    @apply rounded-md border border-white/[0.07] bg-white/[0.05] px-1.5 py-0.5 font-mono text-[0.85em] text-bronze-200;
+  }
+
+  .md-content pre {
+    @apply my-7 overflow-x-auto rounded-2xl border border-white/[0.07] bg-obsidian-950 p-5 text-[13px] leading-relaxed;
+  }
+
+  .md-content pre code {
+    @apply border-0 bg-transparent p-0 text-[13px] text-ink-soft;
+  }
+
+  .md-content table {
+    @apply w-full min-w-[520px] border-collapse text-[14px];
+  }
+
+  .md-content thead th {
+    @apply border-b border-white/10 px-3 py-2.5 text-left font-medium text-ink;
+  }
+
+  .md-content tbody td {
+    @apply border-b border-white/[0.06] px-3 py-2.5 align-top text-ink-muted;
+  }
+
+  .md-content hr {
+    @apply my-10 border-white/[0.08];
+  }
+
+  .md-content img {
+    @apply rounded-xl border border-white/[0.07];
+  }
+
+  .md-table-wrap {
+    @apply -mx-1 overflow-x-auto;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* ---------- 卡片鼠标跟随聚光 ---------- */
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    320px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(212, 175, 55, 0.1),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight::before {
+    display: none;
+  }
+}
+
+/* ---------- Markdown 列表标记 ---------- */
+.md-content ul li::marker,
+.md-content ol li::marker {
+  color: rgba(212, 175, 55, 0.6);
+}
+
+.md-content ol li::marker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82em;
+}
+
+/* ---------- highlight.js 主题（古铜金 / 曜石） ---------- */
+.hljs {
+  color: #c7c2b8;
+  background: transparent;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #5f5b54;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name,
+.hljs-tag {
+  color: #dfc672;
+}
+
+.hljs-string,
+.hljs-attr,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-regexp {
+  color: #9cc0ff;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet {
+  color: #e8a87c;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-title.function_ {
+  color: #f4f1ea;
+}
+
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: #d4af37;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params,
+.hljs-property {
+  color: #c7c2b8;
+}
+
+.hljs-meta,
+.hljs-doctag {
+  color: #8c8880;
+}
+
+.hljs-deletion {
+  color: #f08a8a;
+  background: rgba(240, 138, 138, 0.08);
+}
+
+.hljs-addition {
+  color: #8ad6a5;
+  background: rgba(138, 214, 165, 0.08);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 600;
+}

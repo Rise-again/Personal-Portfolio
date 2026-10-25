@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+
+# 私密凭据
+.env
+.env.local
+
+# 运行时产物：由 npm run sync:notion / predev / prebuild 生成，不进仓库
+src/content/notion/
+src/content/index.json
+public/notion/
+.notion-sync.json
