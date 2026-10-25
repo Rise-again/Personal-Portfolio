@@ -14,3 +14,6 @@ src/content/notion/
 src/content/index.json
 public/notion/
 .notion-sync.json
+
+# 本地工具配置
+.claude/
