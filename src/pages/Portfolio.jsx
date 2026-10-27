@@ -1,7 +1,9 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, Github } from 'lucide-react'
 
 import BentoCard from '@/components/ui/BentoCard'
 import ProjectGlyph from '@/components/portfolio/ProjectGlyph'
+import { fadeUp, stagger } from '@/lib/motion'
 import { projects } from '@/data/projects'
 import { cn } from '@/lib/cn'
 
@@ -18,25 +20,34 @@ const GLYPH_POSITION = {
 }
 
 export default function Portfolio() {
+  const reduce = useReducedMotion()
+  const initial = reduce ? false : 'hidden'
+
   return (
     <section className="relative isolate overflow-hidden">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="score-grid score-mask absolute inset-0 opacity-30" />
-        <div className="absolute -right-40 -top-32 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.12),transparent_65%)] blur-3xl" />
-        <div className="absolute -left-32 top-1/2 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle_at_center,rgba(76,141,255,0.10),transparent_65%)] blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-36">
-        <p className="font-mono text-[10px] tracking-[0.4em] text-bronze-300/70">
-          WORK / 作品
-        </p>
+        <motion.div variants={stagger} initial={initial} animate="show">
+          <motion.p
+            variants={fadeUp}
+            className="font-mono text-[10px] tracking-[0.4em] text-bronze-300/70"
+          >
+            WORK / 作品
+          </motion.p>
 
-        <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <h1 className="font-display text-display-sm text-ink">产品与实验</h1>
-          <p className="max-w-md text-pretty text-[14px] leading-relaxed text-ink-muted md:text-right">
-            六个从 0 到 1 的项目：产品 MVP、开源工具、深度拆解，以及一些纯粹好玩的实验。
-          </p>
-        </div>
+          <motion.div
+            variants={fadeUp}
+            className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
+          >
+            <h1 className="font-display text-display-sm text-ink">产品与实验</h1>
+            <p className="max-w-md text-pretty text-[14px] leading-relaxed text-ink-muted md:text-right">
+              六个从 0 到 1 的项目：产品 MVP、开源工具、深度拆解，以及一些纯粹好玩的实验。
+            </p>
+          </motion.div>
+        </motion.div>
 
         <div className="mt-12 grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
           {projects.map((project, index) => (

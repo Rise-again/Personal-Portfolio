@@ -1,233 +1,354 @@
-import { motion } from 'framer-motion'
-import { Brain, Compass, LineChart, Layers, Music4, Waves } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { ArrowUpRight, BookOpen, Coffee, Footprints, Github, Mail, Music4, Sparkles } from 'lucide-react'
 
-import BentoCard, { BentoLabel } from '@/components/ui/BentoCard'
+import Button from '@/components/ui/Button'
+import { EASE, fadeUp, stagger } from '@/lib/motion'
 import {
-  competencies,
-  humanistPoints,
-  nowItems,
-  philosophy,
-  timeline,
-  toolStack,
-} from '@/data/about'
-import { site } from '@/data/site'
+  education,
+  experience,
+  honors,
+  interests,
+  jobTarget,
+  lastUpdated,
+  nowDoing,
+  profile,
+  projects,
+  skills,
+} from '@/data/resume'
 
-const COMPETENCE_ICONS = [Brain, Compass, LineChart]
-const HUMANIST_ICONS = { Music4, Waves, Layers }
+const INTEREST_ICONS = { Music4, Coffee, Footprints, BookOpen }
 
-export default function About() {
+function Section({ label, en, children }) {
   return (
-    <section className="relative isolate overflow-hidden">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="score-grid score-mask absolute inset-0 opacity-40" />
-        <div className="absolute -left-40 -top-32 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.13),transparent_65%)] blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,rgba(76,141,255,0.10),transparent_65%)] blur-3xl" />
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.7, ease: EASE }}
+      className="grid gap-6 border-t border-white/[0.08] pt-10 md:grid-cols-[180px_1fr] md:gap-12"
+    >
+      <div>
+        <h2 className="font-display text-[17px] leading-none text-ink">{label}</h2>
+        <p className="mt-2 font-mono text-[9px] tracking-[0.24em] text-ink-faint">{en}</p>
       </div>
+      <div>{children}</div>
+    </motion.section>
+  )
+}
 
-      <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-36">
-        <p className="font-mono text-[10px] tracking-[0.4em] text-bronze-300/70">
-          ABOUT / 关于
-        </p>
+function Portrait() {
+  return (
+    <div>
+      <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/[0.08] bg-[radial-gradient(circle_at_50%_28%,rgba(212,175,55,0.12),transparent_70%)] md:aspect-[4/5]">
+        <div className="score-grid absolute inset-0 opacity-40" />
 
-        <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <h1 className="font-display text-display-sm text-ink">简历与思考方式</h1>
-          <p className="max-w-md text-pretty text-[14px] leading-relaxed text-ink-muted md:text-right">
-            六年的产品实践、一套方法论，以及一个关于音乐的人文角落。
-          </p>
+        <div className="absolute inset-0 grid place-items-center">
+          <span className="font-display text-[96px] leading-none text-bronze-300/25">
+            {profile.monogram}
+          </span>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
-          {/* 01 个人档案 */}
-          <BentoCard className="flex flex-col lg:col-span-5 lg:row-span-2">
-            <BentoLabel index="01">PROFILE</BentoLabel>
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-obsidian-900/90 to-transparent p-4">
+          <span className="font-mono text-[9px] tracking-[0.22em] text-ink-faint">
+            PORTRAIT
+          </span>
+          <span className="font-mono text-[9px] tracking-[0.22em] text-ink-faint">
+            {profile.nameEn.toUpperCase()}
+          </span>
+        </div>
+      </div>
 
-            <div className="mt-8 flex items-start justify-between gap-4">
-              <div>
-                <p className="font-mono text-[10px] tracking-[0.4em] text-ink-faint">
-                  {site.nameEn.toUpperCase()}
-                </p>
-                <h2 className="mt-2 font-display text-5xl leading-none text-ink">
-                  {site.name}
-                </h2>
-                <p className="mt-3 text-sm text-ink-muted">{site.role}</p>
-                <p className="mt-1 font-mono text-[10px] tracking-[0.18em] text-ink-faint">
-                  {site.location}
-                </p>
-              </div>
+      <p className="mt-4 flex items-center gap-2 text-[12.5px] text-ink-muted">
+        <span className="relative flex h-1.5 w-1.5 shrink-0">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bronze-300/60 motion-reduce:animate-none" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-bronze-300" />
+        </span>
+        可实习 · {jobTarget.available} · {jobTarget.cities.join(' / ')}
+      </p>
+    </div>
+  )
+}
 
-              <div aria-hidden="true" className="relative h-14 w-14 shrink-0">
-                <div className="absolute inset-0 rounded-full border border-bronze-400/25" />
-                <div className="absolute inset-2 rounded-full border border-bronze-400/15" />
-                <div className="absolute inset-[38%] rounded-full bg-bronze-400/80 shadow-glow-sm" />
+export default function About() {
+  const reduce = useReducedMotion()
+  const initial = reduce ? false : 'hidden'
+
+  const facts = [
+    { label: '现状', value: `${education.school} · ${education.major} · 大三` },
+    { label: '求职意向', value: `${jobTarget.role} · ${jobTarget.type}` },
+    { label: '关注方向', value: profile.focusAreas.join('、') },
+  ]
+
+  return (
+    <section className="relative isolate overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="score-grid score-mask pointer-events-none absolute inset-0 opacity-25"
+      />
+
+      <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-36">
+        <motion.div variants={stagger} initial={initial} animate="show">
+          <motion.p
+            variants={fadeUp}
+            className="font-mono text-[10px] tracking-[0.4em] text-bronze-300/70"
+          >
+            ABOUT / 关于
+          </motion.p>
+
+          <motion.h1
+            variants={fadeUp}
+            className="mt-6 font-display text-[clamp(2.8rem,6.5vw,4.6rem)] leading-[0.95] text-gradient-gold"
+          >
+            {profile.name}
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="mt-6 max-w-2xl text-pretty text-[17px] leading-[1.85] text-ink-soft"
+          >
+            {profile.pitch}
+          </motion.p>
+
+          <motion.div
+            variants={fadeUp}
+            className="mt-12 grid gap-10 md:grid-cols-[220px_1fr] md:gap-16"
+          >
+            <Portrait />
+
+            <div className="flex flex-col">
+              <dl className="space-y-7">
+                {facts.map((item) => (
+                  <div key={item.label} className="grid gap-1 sm:grid-cols-[88px_1fr] sm:gap-5">
+                    <dt className="font-mono text-[10px] tracking-[0.16em] text-ink-faint">
+                      {item.label}
+                    </dt>
+                    <dd className="text-[14.5px] leading-relaxed text-ink">{item.value}</dd>
+                  </div>
+                ))}
+
+                <div className="grid gap-1 sm:grid-cols-[88px_1fr] sm:gap-5">
+                  <dt className="font-mono text-[10px] tracking-[0.16em] text-ink-faint">
+                    联系方式
+                  </dt>
+                  <dd className="flex items-center gap-4">
+                    <a
+                      href={`mailto:${profile.email}`}
+                      aria-label="发送邮件"
+                      className="text-ink-muted transition-colors duration-200 hover:text-bronze-200"
+                    >
+                      <Mail className="h-4 w-4" />
+                    </a>
+                    <a
+                      href={profile.github}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      aria-label="GitHub"
+                      className="text-ink-muted transition-colors duration-200 hover:text-bronze-200"
+                    >
+                      <Github className="h-4 w-4" />
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-auto pt-10">
+                <Button to="/connect" size="lg" icon={ArrowUpRight}>
+                  联系我
+                </Button>
               </div>
             </div>
+          </motion.div>
+        </motion.div>
 
-            <p className="mt-6 text-pretty text-[15px] leading-relaxed text-ink-soft">
-              {site.intro}
-            </p>
-
-            <div className="mt-auto pt-8">
-              <div className="hairline" />
-              <div className="mt-5 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full border border-bronze-400/25 bg-bronze-400/[0.06] px-3 py-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-bronze-300" />
-                  <span className="font-mono text-[10px] tracking-[0.2em] text-bronze-200/90">
-                    OPEN TO COLLABORATION
-                  </span>
-                </span>
-                <a
-                  href={`mailto:${site.email}`}
-                  className="cursor-pointer rounded-full border border-white/10 px-3 py-1 font-mono text-[10px] tracking-[0.14em] text-ink-muted transition-colors duration-200 hover:border-white/25 hover:text-ink"
+        <div className="mt-20 space-y-12">
+          <Section label="经历" en="EXPERIENCE">
+            <div className="divide-y divide-white/[0.07]">
+              {experience.map((item) => (
+                <div
+                  key={item.period}
+                  className="grid gap-1 py-5 first:pt-0 md:grid-cols-[130px_1fr] md:gap-8"
                 >
-                  {site.email}
-                </a>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* 02 核心竞争力 */}
-          <BentoCard className="lg:col-span-4" delay={0.05}>
-            <BentoLabel index="02">COMPETENCE</BentoLabel>
-            <h3 className="mt-5 font-display text-2xl text-ink">核心竞争力矩阵</h3>
-
-            <ul className="mt-6 space-y-5">
-              {competencies.map((item, index) => {
-                const Icon = COMPETENCE_ICONS[index] ?? Brain
-                return (
-                  <li key={item.title}>
-                    <div className="flex items-center gap-2.5">
-                      <Icon className="h-4 w-4 shrink-0 text-bronze-300/80" />
-                      <span className="text-sm text-ink">{item.title}</span>
-                      <span className="ml-auto font-mono text-[10px] text-ink-faint">
-                        {item.score}
-                      </span>
-                    </div>
-
-                    <div className="mt-2 h-[2px] w-full overflow-hidden rounded-full bg-white/[0.06]">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${item.score}%` }}
-                        viewport={{ once: true }}
-                        transition={{
-                          duration: 1,
-                          delay: 0.2 + index * 0.12,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
-                        className="h-full rounded-full bg-gradient-to-r from-bronze-600 to-bronze-300"
-                      />
-                    </div>
-
-                    <p className="mt-2 text-[12.5px] leading-relaxed text-ink-muted">
+                  <span className="font-mono text-[10.5px] tracking-[0.1em] text-ink-faint">
+                    {item.period}
+                  </span>
+                  <div>
+                    <p className="text-[15px] text-ink">
+                      {item.role}
+                      <span className="text-ink-muted"> · {item.org}</span>
+                    </p>
+                    <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-muted">
                       {item.desc}
                     </p>
-                  </li>
-                )
-              })}
-            </ul>
-          </BentoCard>
-
-          {/* 03 此刻 */}
-          <BentoCard className="lg:col-span-3" delay={0.1}>
-            <BentoLabel index="03">NOW</BentoLabel>
-            <h3 className="mt-5 font-display text-2xl text-ink">此刻</h3>
-
-            <ul className="mt-5 space-y-4">
-              {nowItems.map((item) => (
-                <li key={item.label}>
-                  <p className="font-mono text-[9px] tracking-[0.26em] text-ink-faint">
-                    {item.label}
-                  </p>
-                  <p className="mt-1 text-[13px] leading-snug text-ink-soft">
-                    {item.value}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </BentoCard>
-
-          {/* 04 方法论 */}
-          <BentoCard className="lg:col-span-3" delay={0.15}>
-            <BentoLabel index="04">PHILOSOPHY</BentoLabel>
-
-            <blockquote className="mt-6 border-l-2 border-bronze-400/40 pl-4">
-              <p className="font-display text-[19px] leading-snug text-ink">
-                {philosophy.quote}
-              </p>
-            </blockquote>
-
-            <p className="mt-5 text-[12.5px] leading-relaxed text-ink-muted">
-              {philosophy.note}
-            </p>
-          </BentoCard>
-
-          {/* 05 履历 */}
-          <BentoCard className="lg:col-span-4" delay={0.2}>
-            <BentoLabel index="05">EXPERIENCE</BentoLabel>
-
-            <ol className="mt-6 space-y-5">
-              {timeline.map((item, index) => (
-                <li key={item.period} className="relative pl-5">
-                  <span className="absolute left-0 top-[7px] h-1.5 w-1.5 rounded-full bg-bronze-400/70" />
-                  {index < timeline.length - 1 && (
-                    <span className="absolute left-[2.5px] top-4 h-full w-px bg-white/[0.08]" />
-                  )}
-
-                  <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-sm text-ink">{item.role}</p>
-                    <span className="whitespace-nowrap font-mono text-[9px] tracking-[0.1em] text-ink-faint">
-                      {item.period}
-                    </span>
                   </div>
-                  <p className="mt-0.5 text-[12px] text-ink-muted">{item.org}</p>
-                  <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-muted">
-                    {item.desc}
-                  </p>
+                </div>
+              ))}
+            </div>
+          </Section>
+
+          <Section label="项目" en="SELECTED WORK">
+            <ul className="divide-y divide-white/[0.07]">
+              {projects.map((project, index) => (
+                <li key={project.name} className="py-5 first:pt-0">
+                  <a
+                    href={project.href || undefined}
+                    target={project.href ? '_blank' : undefined}
+                    rel={project.href ? 'noreferrer noopener' : undefined}
+                    className="group grid gap-1 md:grid-cols-[130px_1fr] md:gap-8"
+                  >
+                    <span className="font-mono text-[10px] text-ink-faint">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+
+                    <div className="flex items-start justify-between gap-6">
+                      <div>
+                        <p className="text-[15px] text-ink transition-colors duration-300 group-hover:text-bronze-100">
+                          {project.name}
+                        </p>
+                        <p className="mt-1 text-[13.5px] leading-relaxed text-ink-muted">
+                          {project.summary}
+                        </p>
+                        <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] text-ink-faint">
+                          {project.highlights.map((item) => (
+                            <span key={item}>{item}</span>
+                          ))}
+                        </p>
+                      </div>
+
+                      <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-ink-faint transition-all duration-300 ease-silk group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-bronze-300" />
+                    </div>
+                  </a>
                 </li>
               ))}
-            </ol>
-          </BentoCard>
+            </ul>
+          </Section>
 
-          {/* 06 人文角落 */}
-          <BentoCard className="lg:col-span-7" delay={0.05}>
-            <BentoLabel index="06">HUMANIST</BentoLabel>
-            <h3 className="mt-5 font-display text-2xl text-ink">古典音乐教我的产品课</h3>
+          <Section label="教育" en="EDUCATION">
+            <div className="grid gap-1 md:grid-cols-[130px_1fr] md:gap-8">
+              <span className="font-mono text-[10.5px] tracking-[0.1em] text-ink-faint">
+                {education.period}
+              </span>
+              <div>
+                <p className="text-[15px] text-ink">
+                  {education.school}
+                  <span className="text-ink-muted">
+                    {' '}
+                    · {education.major} · {education.degree}
+                  </span>
+                </p>
+                <p className="mt-1.5 font-mono text-[11px] tracking-[0.08em] text-bronze-200/80">
+                  GPA {education.gpa}
+                </p>
 
-            <div className="mt-6 grid gap-5 sm:grid-cols-3">
-              {humanistPoints.map((point) => {
-                const Icon = HUMANIST_ICONS[point.icon] ?? Music4
-                return (
-                  <div key={point.title}>
-                    <Icon className="h-4 w-4 text-bronze-300/80" />
-                    <p className="mt-2.5 text-sm text-ink">{point.title}</p>
-                    <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-muted">
-                      {point.desc}
+                <ul className="mt-4 flex flex-wrap gap-1.5">
+                  {education.courses.map((course) => (
+                    <li
+                      key={course}
+                      className="rounded-full border border-white/[0.08] px-2.5 py-1 font-mono text-[10px] text-ink-muted"
+                    >
+                      {course}
+                    </li>
+                  ))}
+                </ul>
+
+                <ul className="mt-5 space-y-2 border-t border-white/[0.06] pt-4">
+                  {honors.map((item) => (
+                    <li
+                      key={item.title}
+                      className="flex items-baseline justify-between gap-4"
+                    >
+                      <span className="text-[13px] text-ink-soft">
+                        {item.title}
+                        {item.detail && (
+                          <span className="text-ink-muted"> · {item.detail}</span>
+                        )}
+                      </span>
+                      <span className="shrink-0 font-mono text-[10px] text-ink-faint">
+                        {item.year}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Section>
+
+          <Section label="技术栈" en="FOCUS">
+            <div className="space-y-4">
+              {skills.map((group) => (
+                <div
+                  key={group.group}
+                  className="grid gap-1 md:grid-cols-[130px_1fr] md:gap-8"
+                >
+                  <span className="font-mono text-[10px] tracking-[0.14em] text-ink-faint">
+                    {group.group}
+                  </span>
+                  <p className="text-[13.5px] leading-relaxed text-ink-soft">
+                    {group.items.join('、')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Section>
+
+          <Section label="此刻" en="NOW">
+            <div className="space-y-8">
+              <div className="space-y-3">
+                {nowDoing.map((item) => (
+                  <div
+                    key={item.label}
+                    className="grid gap-1 md:grid-cols-[130px_1fr] md:gap-8"
+                  >
+                    <span className="font-mono text-[10px] tracking-[0.14em] text-ink-faint">
+                      {item.label}
+                    </span>
+                    <p className="text-[13.5px] leading-relaxed text-ink-soft">
+                      {item.value}
                     </p>
                   </div>
-                )
-              })}
+                ))}
+              </div>
+
+              <ul className="grid gap-x-8 gap-y-3 border-t border-white/[0.06] pt-6 sm:grid-cols-2">
+                {interests.map((item) => {
+                  const Icon = INTEREST_ICONS[item.icon] ?? Sparkles
+                  return (
+                    <li key={item.title} className="flex items-start gap-2.5">
+                      <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-bronze-300/70" />
+                      <span className="text-[13px] text-ink-soft">
+                        {item.title}
+                        <span className="text-ink-faint"> — {item.note}</span>
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
-          </BentoCard>
+          </Section>
 
-          {/* 07 工具箱 */}
-          <BentoCard className="lg:col-span-5" delay={0.1}>
-            <BentoLabel index="07">TOOLKIT</BentoLabel>
-            <h3 className="mt-5 font-display text-2xl text-ink">日常工具箱</h3>
+          <Section label="签名" en="SIGNATURE">
+            <div>
+              <blockquote className="text-balance font-display text-2xl leading-snug text-ink sm:text-[30px]">
+                「{profile.signature}」
+              </blockquote>
 
-            <ul className="mt-6 flex flex-wrap gap-2">
-              {toolStack.map((tool) => (
-                <li
-                  key={tool}
-                  className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 font-mono text-[11px] text-ink-soft transition-colors duration-200 hover:border-bronze-400/30 hover:text-bronze-200"
-                >
-                  {tool}
-                </li>
-              ))}
-            </ul>
+              <svg viewBox="0 0 240 12" className="mt-3 h-3 w-48" fill="none" aria-hidden="true">
+                <motion.path
+                  d="M2 8 C 60 2, 120 12, 238 5"
+                  stroke="rgba(212,175,55,0.65)"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  whileInView={{ pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.4, ease: EASE }}
+                />
+              </svg>
 
-            <p className="mt-6 text-[12.5px] leading-relaxed text-ink-muted">
-              工具会换，判断力不会。选工具的标准只有一个：它是否让我更快地接触到真实反馈。
-            </p>
-          </BentoCard>
+              <p className="mt-4 font-mono text-[9px] tracking-[0.24em] text-ink-faint">
+                {profile.nameEn.toUpperCase()} · 最后更新 {lastUpdated}
+              </p>
+            </div>
+          </Section>
         </div>
       </div>
     </section>
