@@ -1,44 +1,40 @@
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { BookOpen, Coffee, Download } from 'lucide-react'
 
 import Button from '@/components/ui/Button'
 import VinylDisc from '@/components/hero/VinylDisc'
 import Ticker from '@/components/hero/Ticker'
+import { fadeUp, popIn, stagger } from '@/lib/motion'
 import { heroStats, site } from '@/data/site'
-
-const EASE = [0.22, 1, 0.36, 1]
-
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } },
-}
-
-const item = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: EASE } },
-}
 
 export default function Hero() {
   const reduce = useReducedMotion()
+  const { scrollY } = useScroll()
+
+  // 背景比内容慢半拍，滚动时形成轻微的纵深错位
+  const backdropY = useTransform(scrollY, [0, 700], [0, 90])
+  const vinylY = useTransform(scrollY, [0, 700], [0, 38])
+
   const initial = reduce ? false : 'hidden'
 
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
       {/* 背景层 */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 score-grid score-mask opacity-70" />
-        <div className="absolute -left-40 -top-48 h-[620px] w-[620px] animate-float rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.16),transparent_65%)] blur-3xl motion-reduce:animate-none" />
-        <div className="absolute -right-32 top-1/4 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(76,141,255,0.12),transparent_65%)] blur-3xl" />
-        <div className="absolute -bottom-24 left-1/3 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(150,116,31,0.12),transparent_65%)] blur-3xl" />
+      <motion.div
+        aria-hidden="true"
+        style={reduce ? undefined : { y: backdropY }}
+        className="pointer-events-none absolute -inset-y-[12%] inset-x-0"
+      >
+        <div className="score-grid score-mask absolute inset-0 opacity-70" />
         <div className="noise-overlay absolute inset-0 opacity-[0.04] mix-blend-overlay" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-obsidian-900 via-obsidian-900/60 to-transparent" />
-      </div>
+      </motion.div>
 
       {/* 主内容 */}
       <div className="relative mx-auto grid w-full max-w-6xl flex-1 items-center gap-16 px-6 pb-24 pt-32 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8 lg:pb-20 lg:pt-28">
-        <motion.div variants={container} initial={initial} animate="show">
+        <motion.div variants={stagger} initial={initial} animate="show">
           {/* 状态徽标 */}
-          <motion.div variants={item}>
+          <motion.div variants={fadeUp}>
             <span className="inline-flex items-center gap-2 rounded-full border border-bronze-400/25 bg-bronze-400/[0.06] px-3 py-1">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bronze-300/70 motion-reduce:animate-none" />
@@ -51,7 +47,7 @@ export default function Hero() {
           </motion.div>
 
           {/* 姓名 */}
-          <motion.div variants={item} className="mt-8">
+          <motion.div variants={fadeUp} className="mt-8">
             <p className="flex items-center gap-3 font-mono text-[11px] tracking-[0.42em] text-ink-muted">
               <span className="h-px w-8 bg-gradient-to-r from-bronze-400/70 to-transparent" />
               {site.greeting}
@@ -69,7 +65,7 @@ export default function Hero() {
 
           {/* 身份 */}
           <motion.div
-            variants={item}
+            variants={fadeUp}
             className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-soft"
           >
             {site.roles.map((role, index) => (
@@ -83,7 +79,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.p
-            variants={item}
+            variants={fadeUp}
             className="mt-5 max-w-lg text-pretty text-[15px] leading-relaxed text-ink-muted"
           >
             {site.intro}
@@ -91,7 +87,7 @@ export default function Hero() {
 
           {/* 行动按钮 */}
           <motion.div
-            variants={item}
+            variants={fadeUp}
             className="mt-9 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center"
           >
             <Button to="/notes" size="lg" icon={BookOpen} iconPosition="left">
@@ -120,7 +116,7 @@ export default function Hero() {
           </motion.div>
 
           {/* 数据条 */}
-          <motion.div variants={item} className="mt-12 max-w-md">
+          <motion.div variants={fadeUp} className="mt-12 max-w-md">
             <div className="hairline" />
             <ul className="mt-6 flex items-center gap-8 sm:gap-12">
               {heroStats.map((stat) => (
@@ -139,12 +135,12 @@ export default function Hero() {
 
         {/* 黑胶视觉 */}
         <motion.div
-          initial={reduce ? false : { opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.1, delay: 0.35, ease: EASE }}
+          style={reduce ? undefined : { y: vinylY }}
           className="relative mx-auto w-full max-w-[380px] lg:mx-0 lg:ml-auto lg:mr-4 lg:max-w-[420px]"
         >
-          <VinylDisc />
+          <motion.div variants={popIn} initial={initial} animate="show">
+            <VinylDisc />
+          </motion.div>
         </motion.div>
       </div>
 

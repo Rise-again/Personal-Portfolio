@@ -47,7 +47,12 @@ const ICONS = {
 }
 
 const CARD_CLASS =
-  'spotlight group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 transition-all duration-300 ease-silk hover:-translate-y-1 hover:border-bronze-400/45 hover:bg-white/[0.05] hover:shadow-[0_0_40px_-12px_rgba(212,175,55,0.5)] last:col-span-2 lg:last:col-span-1'
+  'spotlight group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 transition-[border-color,background-color,box-shadow] duration-300 ease-silk hover:border-bronze-400/45 hover:bg-white/[0.05] hover:shadow-[0_0_40px_-12px_rgba(212,175,55,0.5)] last:col-span-2 lg:last:col-span-1'
+
+const CARD_HOVER = {
+  y: -4,
+  transition: { type: 'spring', stiffness: 380, damping: 26 },
+}
 
 function SocialCard({ channel, Icon, ActionIcon, onOpen }) {
   const { ref, onMouseMove } = useSpotlight()
@@ -77,6 +82,8 @@ function SocialCard({ channel, Icon, ActionIcon, onOpen }) {
         ref={ref}
         onMouseMove={onMouseMove}
         variants={item}
+        whileHover={CARD_HOVER}
+        whileTap={{ scale: 0.995 }}
         type="button"
         onClick={onOpen}
         aria-haspopup="dialog"
@@ -93,6 +100,8 @@ function SocialCard({ channel, Icon, ActionIcon, onOpen }) {
       ref={ref}
       onMouseMove={onMouseMove}
       variants={item}
+      whileHover={CARD_HOVER}
+      whileTap={{ scale: 0.995 }}
       href={channel.href}
       target="_blank"
       rel="noreferrer noopener"
@@ -111,6 +120,8 @@ function EmailBar() {
       ref={ref}
       onMouseMove={onMouseMove}
       variants={item}
+      whileHover={CARD_HOVER}
+      whileTap={{ scale: 0.995 }}
       href={`mailto:${site.email}`}
       className="spotlight group relative mt-4 flex flex-col items-start justify-between gap-4 overflow-hidden rounded-2xl border border-bronze-400/20 bg-bronze-400/[0.04] px-6 py-5 transition-colors duration-300 hover:border-bronze-400/45 hover:bg-bronze-400/[0.07] sm:flex-row sm:items-center"
     >
@@ -139,8 +150,6 @@ export default function Connect() {
     <section className="relative isolate overflow-hidden">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="score-grid score-mask absolute inset-0 opacity-30" />
-        <div className="absolute -left-32 -top-32 h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.12),transparent_65%)] blur-3xl" />
-        <div className="absolute -right-24 top-1/3 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle_at_center,rgba(76,141,255,0.10),transparent_65%)] blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-36">

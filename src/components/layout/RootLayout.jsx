@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ScrollProgress from '@/components/layout/ScrollProgress'
 import ScrollToTop from '@/components/layout/ScrollToTop'
+import GlobalBackdrop from '@/components/background/GlobalBackdrop'
 import MiniPlayer from '@/components/player/MiniPlayer'
 import PlayerProvider from '@/components/player/PlayerProvider'
 
@@ -15,11 +16,13 @@ export default function RootLayout() {
           跳到主要内容
         </a>
 
+        <GlobalBackdrop />
+
         <ScrollProgress />
         <ScrollToTop />
         <Navbar />
 
-        <main id="main" className="flex-1">
+        <main id="main" className="relative z-10 flex-1">
           <Outlet />
         </main>
 

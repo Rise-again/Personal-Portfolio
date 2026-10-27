@@ -42,13 +42,20 @@ export const tickerItems = [
   'WALTZ NO.2',
 ]
 
-// 首页黑胶播放的曲目。把音频文件放到 public/audio/waltz-no-2.mp3，
-// 或把 src 换成你自己的音频地址（需你拥有播放权）。
-export const nowPlaying = {
-  title: '第二圆舞曲',
-  artist: 'Shostakovich · Waltz No. 2',
-  src: '/audio/waltz-no-2.mp3',
-}
+// 首页黑胶的播放列表。把音频文件放到 public/audio/，在这里加一条即可；
+// 只填 src / title / artist 三个字段。
+export const tracks = [
+  {
+    title: '第二圆舞曲',
+    artist: 'Shostakovich · Waltz No. 2',
+    src: '/audio/waltz-no-2.mp3',
+  },
+  {
+    title: 'Liberty, Egality, Fraternity',
+    artist: 'Magnus Ringblom',
+    src: '/audio/liberty-egality-fraternity.mp3',
+  },
+]
 
 // 微信没有外部链接：点击卡片会打开二维码弹窗，handle 即微信号。
 // 把二维码图片放到 public/wechat-qr.png 后会自动替换占位图。

@@ -1,19 +1,24 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 
 import useSpotlight from '@/hooks/useSpotlight'
 import { cn } from '@/lib/cn'
 
+const MotionLink = motion.create(Link)
+
 export default function NoteCard({ post, featured = false }) {
   const { ref, onMouseMove } = useSpotlight()
 
   return (
-    <Link
+    <MotionLink
       ref={ref}
       onMouseMove={onMouseMove}
       to={`/notes/${post.slug}`}
+      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 380, damping: 26 } }}
+      whileTap={{ scale: 0.995 }}
       className={cn(
-        'spotlight group relative block overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.025] transition-all duration-300 ease-silk hover:border-bronze-400/25 hover:bg-white/[0.045]',
+        'spotlight group relative block overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.025] transition-[border-color,box-shadow,background-color] duration-300 ease-silk hover:border-bronze-400/25 hover:bg-white/[0.045] hover:shadow-[0_28px_60px_-32px_rgba(0,0,0,0.9)]',
         featured ? 'p-7 md:p-9' : 'p-6'
       )}
     >
@@ -63,6 +68,6 @@ export default function NoteCard({ post, featured = false }) {
           <ArrowUpRight className="h-4 w-4 shrink-0 text-ink-faint transition-all duration-300 ease-silk group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-bronze-300" />
         </div>
       </div>
-    </Link>
+    </MotionLink>
   )
 }

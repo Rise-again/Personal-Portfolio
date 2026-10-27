@@ -53,7 +53,7 @@ npm run preview   # 本地预览生产构建
    │  └─ posts.js              # Markdown 聚合、排序、标签统计、阅读时长、目录抽取
    ├─ data/
    │  ├─ site.js               # ★ 全站文案/导航/社交/统计
-   │  ├─ about.js              # 关于页：能力矩阵、履历、此刻、方法论、工具
+   │  ├─ resume.js            # ★ 关于页（简历）的全部内容：基本信息、教育、项目、经历、技能等
    │  └─ projects.js           # ★ 作品集条目
    ├─ content/posts/*.md       # ★ 文章正文（frontmatter + Markdown）
    ├─ components/
@@ -101,9 +101,29 @@ featured: true
 
 ## 首页黑胶播放器
 
-点击唱片即可播放 / 暂停：唱臂落入唱片（播放）或摆回唱片上沿之外（暂停），唱片的转动随之启停，正在播放卡片同步显示 `TAP TO PLAY` / `NOW PLAYING` / `PAUSED`。音频地址来自 `site.js` 的 `nowPlaying.src`，默认指向 `public/audio/waltz-no-2.mp3`。
+点击唱片即可播放 / 暂停：唱臂落入唱片（播放）或摆回唱片上沿之外（暂停），唱片随即带阻尼地转起来或滑停。卡片右侧是 `01/03` 序号（点开是曲目表，可自选播放）和 `‹ ›` 切歌按钮；切歌会直接开始播放该曲。
+
+播放列表在 `site.js` 的 `tracks` 里，每首只需 `title / artist / src` 三个字段，音频文件放 `public/audio/`：
+
+```js
+export const tracks = [
+  { title: '第二圆舞曲', artist: 'Shostakovich · Waltz No. 2', src: '/audio/waltz-no-2.mp3' },
+  { title: '另一首', artist: '作曲家 · 作品号', src: '/audio/another.mp3' },
+]
+```
+
+保留一首时点击「下一首」会从头重播；多首时自动循环。
 
 播放状态由 `components/player/PlayerProvider` 统一持有，`<audio>` 挂在全局布局里——**切换到笔记、作品等页面音乐不会中断**。离开首页后，右下角会出现一个毛玻璃悬浮条，可以继续播放 / 暂停；回到首页时黑胶与悬浮条的状态始终同步。
+
+## 动效系统
+
+- `src/lib/motion.js` 收口全站的缓动曲线与入场变体（`fadeUp` / `popIn` / `stagger` / 弹簧参数），各页面标题、卡片统一走 Stagger Children，由上至下错落入场。
+- `components/background/GlobalBackdrop` 是整站唯一的背景光晕层：三团光按路由配置不同的落点，切换页面时用 0.9 秒平滑滑过去，时长与标题、卡片的入场节奏对齐；同时每团光各自做 18–23 秒的呼吸缩放。
+- 首屏用 `useScroll` + `useTransform` 做视差：网格与唱片区比内容慢半拍。
+- 唱片旋转不是 CSS 动画，而是 `useAnimationFrame` + 速度阻尼插值：暂停自然滑停、播放缓慢加速。
+- 按钮与卡片统一用 Framer 的 `whileHover`（上浮 4px + 阴影加深）与 `whileTap`（弹簧缩放）实现。
+- 以上动效在 `prefers-reduced-motion` 下全部降级为静态。
 
 ---
 
@@ -190,7 +210,7 @@ npm run sync:notion && npm run build
 ## 定制清单
 
 1. **改名字 / 身份 / 邮箱 / 社交链接**：`src/data/site.js`（微信号也在 `socials` 的 wechat 条目里）。
-2. **改关于页内容**：`src/data/about.js`。
+2. **改关于页（简历）**：`src/data/resume.js`，整页内容都在这一个文件里。
 3. **改作品集**：`src/data/projects.js`。
 4. **换简历**：把 PDF 放到 `public/resume.pdf`（缺失会 404）。
 5. **换微信二维码**：把图片放到 `public/wechat-qr.png`；没有该文件时弹窗显示占位图。

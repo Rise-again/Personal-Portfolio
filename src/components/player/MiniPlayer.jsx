@@ -3,13 +3,11 @@ import { Pause, Play } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 
 import { usePlayer } from '@/components/player/PlayerProvider'
-import { nowPlaying } from '@/data/site'
-
-const EASE = [0.22, 1, 0.36, 1]
+import { EASE } from '@/lib/motion'
 
 // 首页有黑胶实体控件，其它页面用这个悬浮条继续控制播放。
 export default function MiniPlayer() {
-  const { playing, started, toggle } = usePlayer()
+  const { track, playing, started, toggle } = usePlayer()
   const { pathname } = useLocation()
   const visible = started && pathname !== '/'
 
@@ -39,7 +37,7 @@ export default function MiniPlayer() {
 
             <div className="min-w-0">
               <p className="truncate font-display text-sm leading-tight text-ink">
-                {nowPlaying.title}
+                {track.title}
               </p>
               <p className="mt-0.5 truncate font-mono text-[9px] tracking-[0.14em] text-ink-faint">
                 {playing ? 'NOW PLAYING' : 'PAUSED'}

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 import Markdown from '@/components/notes/Markdown'
 import TableOfContents from '@/components/notes/TableOfContents'
+import { EASE, fadeUp, stagger } from '@/lib/motion'
 import {
   extractHeadings,
   getAdjacentPosts,
@@ -16,6 +18,8 @@ export default function NoteDetail() {
   const post = getPostBySlug(slug)
   const [body, setBody] = useState('')
   const [loading, setLoading] = useState(true)
+  const reduce = useReducedMotion()
+  const initial = reduce ? false : 'hidden'
 
   useEffect(() => {
     let active = true
@@ -69,51 +73,69 @@ export default function NoteDetail() {
     <article className="relative isolate">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="score-grid score-mask absolute inset-0 opacity-25" />
-        <div className="absolute -left-32 -top-24 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.10),transparent_65%)] blur-3xl" />
       </div>
 
       <div className="relative mx-auto flex max-w-6xl justify-center gap-12 px-6 pb-24 pt-32">
         <div className="w-full min-w-0 max-w-[42rem]">
-          <Link
-            to="/notes"
-            className="group inline-flex cursor-pointer items-center gap-2 font-mono text-[10px] tracking-[0.24em] text-ink-faint transition-colors duration-200 hover:text-bronze-200"
-          >
-            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
-            BACK TO NOTES
-          </Link>
-
-          <ul className="mt-8 flex flex-wrap gap-1.5">
-            {post.tags.map((tag) => (
-              <li
-                key={tag}
-                className="rounded-full border border-white/[0.08] px-2.5 py-1 font-mono text-[10px] tracking-[0.1em] text-ink-muted"
+          <motion.div variants={stagger} initial={initial} animate="show">
+            <motion.div variants={fadeUp}>
+              <Link
+                to="/notes"
+                className="group inline-flex cursor-pointer items-center gap-2 font-mono text-[10px] tracking-[0.24em] text-ink-faint transition-colors duration-200 hover:text-bronze-200"
               >
-                {tag}
-              </li>
-            ))}
-          </ul>
+                <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+                BACK TO NOTES
+              </Link>
+            </motion.div>
 
-          <h1 className="mt-4 text-balance font-display text-[34px] leading-[1.15] text-ink sm:text-[44px]">
-            {post.title}
-          </h1>
+            <motion.ul variants={fadeUp} className="mt-8 flex flex-wrap gap-1.5">
+              {post.tags.map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-full border border-white/[0.08] px-2.5 py-1 font-mono text-[10px] tracking-[0.1em] text-ink-muted"
+                >
+                  {tag}
+                </li>
+              ))}
+            </motion.ul>
 
-          {post.summary && (
-            <p className="mt-4 text-pretty text-[15px] leading-relaxed text-ink-muted">
-              {post.summary}
-            </p>
-          )}
+            <motion.h1
+              variants={fadeUp}
+              className="mt-4 text-balance font-display text-[34px] leading-[1.15] text-ink sm:text-[44px]"
+            >
+              {post.title}
+            </motion.h1>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[10px] tracking-[0.16em] text-ink-faint">
-            <span>{post.displayDate}</span>
-            <span className="h-1 w-1 rounded-full bg-ink-faint/50" />
-            <span>{post.readingMinutes} MIN READ</span>
-            <span className="h-1 w-1 rounded-full bg-ink-faint/50" />
-            <span>{post.wordCount} 字</span>
-          </div>
+            {post.summary && (
+              <motion.p
+                variants={fadeUp}
+                className="mt-4 text-pretty text-[15px] leading-relaxed text-ink-muted"
+              >
+                {post.summary}
+              </motion.p>
+            )}
 
-          <div className="hairline mt-8" />
+            <motion.div
+              variants={fadeUp}
+              className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[10px] tracking-[0.16em] text-ink-faint"
+            >
+              <span>{post.displayDate}</span>
+              <span className="h-1 w-1 rounded-full bg-ink-faint/50" />
+              <span>{post.readingMinutes} MIN READ</span>
+              <span className="h-1 w-1 rounded-full bg-ink-faint/50" />
+              <span>{post.wordCount} 字</span>
+            </motion.div>
 
-          <div className="mt-10">
+            <motion.div variants={fadeUp} className="hairline mt-8" />
+          </motion.div>
+
+          <motion.div
+            key={post.slug}
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mt-10"
+          >
             {loading ? (
               <div className="space-y-4" aria-hidden="true">
                 <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/[0.05]" />
@@ -123,7 +145,7 @@ export default function NoteDetail() {
             ) : (
               <Markdown>{body}</Markdown>
             )}
-          </div>
+          </motion.div>
 
           <nav
             aria-label="相邻文章"

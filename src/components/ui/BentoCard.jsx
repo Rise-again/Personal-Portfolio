@@ -18,10 +18,12 @@ export default function BentoCard({ className, children, delay = 0, href }) {
       {...linkProps}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 380, damping: 26 } }}
+      whileTap={{ scale: 0.995 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        'spotlight group relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.025] p-6 backdrop-blur-xl transition-colors duration-300 hover:border-bronze-400/25 md:p-7',
+        'spotlight group relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.025] p-6 backdrop-blur-xl transition-[border-color,box-shadow] duration-300 hover:border-bronze-400/25 hover:shadow-[0_28px_60px_-32px_rgba(0,0,0,0.9)] md:p-7',
         href && 'block cursor-pointer',
         className
       )}
